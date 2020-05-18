@@ -1,4 +1,4 @@
-use crate::app::{err::Error, res::Response};
+use crate::{err::Error, res::Response};
 use futures::future::{TryFuture, TryFutureExt};
 use warp::reject::Rejection;
 

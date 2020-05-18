@@ -1230,21 +1230,35 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fe5bd57d1d7414c6b5ed48563a2c855d995ff777729dcd91c369ec7fea395ae"
 
 [[package]]
-name = "rego"
+name = "rego-app"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "chrono",
- "diesel",
  "futures",
  "http",
+ "rego-domain",
+ "warp",
+]
+
+[[package]]
+name = "rego-domain"
+version = "0.1.0"
+dependencies = [
+ "chrono",
  "jsonwebtoken",
  "pbkdf2",
  "serde",
  "serde_json",
- "smol",
  "thiserror",
- "warp",
+]
+
+[[package]]
+name = "rego-infra"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "diesel",
+ "smol",
 ]
 
 [[package]]

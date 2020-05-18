@@ -1,4 +1,4 @@
-use crate::app::res::{response, Response};
+use crate::res::{response, Response};
 use futures::future;
 use http::StatusCode;
 use warp::reject::{Reject, Rejection};

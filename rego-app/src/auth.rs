@@ -1,6 +1,6 @@
-use crate::app::err::Error;
-use crate::domain::access_token::{AccessToken, JwtEncoder};
+use crate::err::Error;
 use futures::future;
+use rego_domain::access_token::{AccessToken, JwtEncoder};
 use std::str::FromStr;
 use warp::{filters::header::header, Filter, Rejection};
 
