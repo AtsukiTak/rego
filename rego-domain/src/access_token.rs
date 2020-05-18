@@ -12,7 +12,9 @@ pub struct AccessToken {
 }
 
 pub trait AccessTokenBody: Serialize + DeserializeOwned {
-    fn type_name() -> &'static str;
+    fn type_name() -> &'static str {
+        std::any::type_name::<Self>()
+    }
 }
 
 #[derive(Error, Debug)]
