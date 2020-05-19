@@ -26,6 +26,10 @@ impl Error {
         Error::new(StatusCode::UNAUTHORIZED, "")
     }
 
+    pub fn conflict(msg: &'static str) -> Self {
+        Error::new(StatusCode::CONFLICT, msg)
+    }
+
     pub fn internal_server_error(msg: &'static str) -> Self {
         Error::new(StatusCode::INTERNAL_SERVER_ERROR, msg)
     }
