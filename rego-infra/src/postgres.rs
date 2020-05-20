@@ -34,6 +34,10 @@ impl Postgres {
     {
         let pool = self.pool.clone();
         tokio::task::spawn_blocking(move || Ok(func(pool.get()?))).await?
+
+        // TODO
+        // smolを使ったバージョンをfeature gateと共に提供する
+        // smol::blocking!(Ok(func(pool.get()?)))
     }
 
     pub async fn try_with_conn<T, F>(&self, func: F) -> anyhow::Result<T>
