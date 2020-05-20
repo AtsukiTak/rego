@@ -33,7 +33,7 @@ impl Postgres {
         T: Send + 'static,
     {
         let pool = self.pool.clone();
-        smol::blocking!(Ok(func(pool.get()?)))
+        tokio::task::spawn_blocking(move || Ok(func(pool.get()?))).await?
     }
 
     pub async fn try_with_conn<T, F>(&self, func: F) -> anyhow::Result<T>
