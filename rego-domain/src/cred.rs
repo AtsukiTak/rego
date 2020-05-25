@@ -1,6 +1,7 @@
 const N_ITER: u32 = 1_000;
 
-#[derive(Clone)]
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(transparent)]
 pub struct Cred {
     cred: String,
 }
