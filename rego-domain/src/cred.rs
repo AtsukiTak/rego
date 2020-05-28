@@ -1,9 +1,17 @@
+use std::fmt;
+
 const N_ITER: u32 = 1_000;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(transparent)]
 pub struct Cred {
     cred: String,
+}
+
+impl fmt::Debug for Cred {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(f, "Cred {{ ... }}")
+    }
 }
 
 impl Cred {
