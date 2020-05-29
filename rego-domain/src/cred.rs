@@ -1,3 +1,4 @@
+use crate::Error;
 use std::fmt;
 
 const N_ITER: u32 = 1_000;
@@ -15,13 +16,13 @@ impl fmt::Debug for Cred {
 }
 
 impl Cred {
-    pub fn derive(secret: &str) -> Result<Cred, std::io::Error> {
-        let cred = pbkdf2::pbkdf2_simple(secret, N_ITER)?;
+    pub fn derive(secret: &str) -> Result<Cred, Error> {
+        let cred = pbkdf2::pbkdf2_simple(secret, N_ITER).map_err(Error::internal)?;
         Ok(Cred { cred })
     }
 
-    pub fn verify(&self, attempt: &str) -> Result<(), pbkdf2::CheckError> {
-        pbkdf2::pbkdf2_check(attempt, self.cred.as_str())
+    pub fn verify(&self, attempt: &str) -> Result<(), Error> {
+        pbkdf2::pbkdf2_check(attempt, self.cred.as_str()).map_err(Error::internal)
     }
 
     pub fn as_str(&self) -> &str {

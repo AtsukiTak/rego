@@ -1,3 +1,4 @@
+use crate::Error;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
 use serde::{de::DeserializeOwned, ser::Serialize};
@@ -17,16 +18,6 @@ pub trait AccessTokenBody: Serialize + DeserializeOwned {
     }
 }
 
-#[derive(Error, Debug)]
-pub enum Error {
-    #[error("body type is not {0}")]
-    BodyTypeMismatch(&'static str),
-    #[error(transparent)]
-    SerdeJson(#[from] serde_json::error::Error),
-    #[error(transparent)]
-    Encoder(#[from] jsonwebtoken::errors::Error),
-}
-
 impl AccessToken {
     pub fn new<B>(body: &B, valid_dur: Duration) -> Result<Self, Error>
     where
@@ -34,8 +25,8 @@ impl AccessToken {
     {
         let exp = (Utc::now() + valid_dur).timestamp() as usize;
 
-        let serialized_body = serde_json::to_string(body)?;
-        let raw_val = RawValue::from_string(serialized_body)?;
+        let serialized_body = serde_json::to_string(body).map_err(Error::internal)?;
+        let raw_val = RawValue::from_string(serialized_body).map_err(Error::internal)?;
 
         Ok(AccessToken {
             body: raw_val,
@@ -49,10 +40,13 @@ impl AccessToken {
         B: AccessTokenBody,
     {
         if self.body_type != std::any::type_name::<B>() {
-            return Err(Error::BodyTypeMismatch(std::any::type_name::<B>()));
+            return Err(Error::bad_input(format!(
+                "body type is not {}",
+                std::any::type_name::<B>()
+            )));
         }
 
-        Ok(serde_json::from_str::<B>(self.body.get())?)
+        Ok(serde_json::from_str::<B>(self.body.get()).map_err(Error::internal)?)
     }
 }
 
@@ -92,16 +86,13 @@ impl Inner {
     }
 
     fn encode(&self, token: &AccessToken) -> Result<String, Error> {
-        Ok(jsonwebtoken::encode(
-            &Header::default(),
-            token,
-            &self.encoding_key,
-        )?)
+        jsonwebtoken::encode(&Header::default(), token, &self.encoding_key).map_err(Error::internal)
     }
 
     fn decode(&self, token: &str) -> Result<AccessToken, Error> {
         let res =
-            jsonwebtoken::decode::<AccessToken>(token, &self.decoding_key, &Validation::default())?;
+            jsonwebtoken::decode::<AccessToken>(token, &self.decoding_key, &Validation::default())
+                .map_err(Error::internal)?;
         Ok(res.claims)
     }
 }
