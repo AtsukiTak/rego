@@ -20,7 +20,7 @@ pub enum Error {
 
     /// Error representing an **internal** is at fault.
     #[error(transparent)]
-    Internal(anyhow::Error),
+    Internal(#[from] anyhow::Error),
 }
 
 impl Error {
