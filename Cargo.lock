@@ -1110,6 +1110,7 @@ dependencies = [
 name = "rego-domain"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "chrono",
  "jsonwebtoken",
  "pbkdf2",
