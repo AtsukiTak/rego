@@ -11,6 +11,11 @@ pub struct Error {
 }
 
 impl Error {
+    /*
+     * ==============
+     * Constructor methods
+     * ==============
+     */
     pub fn new<S>(status: StatusCode, msg: S) -> Self
     where
         Cow<'static, str>: From<S>,
@@ -41,6 +46,23 @@ impl Error {
         Error::new(StatusCode::INTERNAL_SERVER_ERROR, msg)
     }
 
+    /*
+     * =============
+     * Modifier
+     * =============
+     */
+    pub fn add_msg<S>(self, msg: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        Error::new(self.status, format!("{}\n{}", self.msg, msg.as_ref()))
+    }
+
+    /*
+     * ==========
+     * Others
+     * ==========
+     */
     pub async fn recover(reject: Rejection) -> Result<(Response,), Rejection> {
         match reject.find::<Error>() {
             Some(e) => future::ok((response(e.status, &e.msg),)),
