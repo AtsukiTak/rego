@@ -1,17 +1,24 @@
 use crate::res::{response, Response};
 use futures::future;
 use http::StatusCode;
+use std::borrow::Cow;
 use warp::reject::{Reject, Rejection};
 
 #[derive(Debug, Clone)]
 pub struct Error {
     pub status: StatusCode,
-    pub msg: &'static str,
+    pub msg: Cow<'static, str>,
 }
 
 impl Error {
-    pub fn new(status: StatusCode, msg: &'static str) -> Self {
-        Error { status, msg }
+    pub fn new<S>(status: StatusCode, msg: S) -> Self
+    where
+        Cow<'static, str>: From<S>,
+    {
+        Error {
+            status,
+            msg: msg.into(),
+        }
     }
 
     pub fn not_found(msg: &'static str) -> Self {
@@ -40,6 +47,29 @@ impl Error {
             None => future::err(reject),
         }
         .await
+    }
+}
+
+use rego_domain::Error as DomainError;
+
+impl From<DomainError> for Error {
+    fn from(e: DomainError) -> Self {
+        match e {
+            DomainError::BadInput { msg } => Error::new(StatusCode::BAD_REQUEST, msg),
+            DomainError::AuthFailed => Error::new(
+                StatusCode::UNAUTHORIZED,
+                "authentication or authorization is failed",
+            ),
+            DomainError::NotFound { resource } => {
+                Error::new(StatusCode::NOT_FOUND, format!("{} is not found", resource))
+            }
+            DomainError::Conflict { resource } => {
+                Error::new(StatusCode::CONFLICT, format!("{} is conflict", resource))
+            }
+            DomainError::Internal(_) => {
+                Error::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            }
+        }
     }
 }
 
