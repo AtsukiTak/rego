@@ -2,6 +2,7 @@ use diesel::{
     pg::PgConnection,
     r2d2::{Builder, ConnectionManager, Pool, PooledConnection},
 };
+use rego_domain::Error;
 
 #[derive(Clone)]
 pub struct Postgres {
@@ -27,22 +28,25 @@ impl Postgres {
         Ok(Postgres { pool })
     }
 
-    pub async fn with_conn<T, F>(&self, func: F) -> anyhow::Result<T>
+    pub async fn with_conn<T, F>(&self, func: F) -> Result<T, Error>
     where
         F: FnOnce(Connection) -> T + Send + 'static,
         T: Send + 'static,
     {
         let pool = self.pool.clone();
-        tokio::task::spawn_blocking(move || Ok(func(pool.get()?))).await?
+        let pg = pool.get().map_err(Error::internal)?;
+        tokio::task::spawn_blocking(move || Ok(func(pg)))
+            .await
+            .map_err(Error::internal)?
 
         // TODO
         // smolを使ったバージョンをfeature gateと共に提供する
         // smol::blocking!(Ok(func(pool.get()?)))
     }
 
-    pub async fn try_with_conn<T, F>(&self, func: F) -> anyhow::Result<T>
+    pub async fn try_with_conn<T, F>(&self, func: F) -> Result<T, Error>
     where
-        F: FnOnce(Connection) -> anyhow::Result<T> + Send + 'static,
+        F: FnOnce(Connection) -> Result<T, Error> + Send + 'static,
         T: Send + 'static,
     {
         self.with_conn(func).await?
