@@ -1,4 +1,5 @@
 use diesel::{
+    connection::Connection as _,
     pg::PgConnection,
     r2d2::{Builder, ConnectionManager, Pool, PooledConnection},
 };
@@ -35,9 +36,9 @@ impl Postgres {
     {
         let pool = self.pool.clone();
         let pg = pool.get().map_err(Error::internal)?;
-        tokio::task::spawn_blocking(move || Ok(func(pg)))
+        tokio::task::spawn_blocking(move || func(pg))
             .await
-            .map_err(Error::internal)?
+            .map_err(Error::internal)
 
         // TODO
         // smolを使ったバージョンをfeature gateと共に提供する
@@ -50,5 +51,25 @@ impl Postgres {
         T: Send + 'static,
     {
         self.with_conn(func).await?
+    }
+
+    pub async fn transaction<T, F>(&self, func: F) -> Result<T, Error>
+    where
+        for<'a> F: FnOnce(&'a Connection) -> Result<T, Error> + Send + 'static,
+        T: Send + 'static,
+    {
+        struct InnerError(Error);
+
+        impl From<diesel::result::Error> for InnerError {
+            fn from(e: diesel::result::Error) -> InnerError {
+                InnerError(Error::internal(e))
+            }
+        }
+
+        self.try_with_conn(|conn| {
+            conn.transaction::<T, InnerError, _>(|| func(&conn).map_err(InnerError))
+                .map_err(|InnerError(e)| e)
+        })
+        .await
     }
 }
