@@ -1095,6 +1095,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fe5bd57d1d7414c6b5ed48563a2c855d995ff777729dcd91c369ec7fea395ae"
 
 [[package]]
+name = "rego"
+version = "0.1.0"
+dependencies = [
+ "rego-app",
+ "rego-domain",
+ "rego-infra",
+]
+
+[[package]]
 name = "rego-app"
 version = "0.1.0"
 dependencies = [

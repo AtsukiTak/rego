@@ -1,0 +1,15 @@
+[package]
+name = "rego"
+version = "0.1.0"
+authors = ["AtsukiTak <takatomgoo@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rego-app = { path = "../rego-app", optional = true }
+rego-infra = { path = "../rego-infra", optional = true }
+rego-domain = { path = "../rego-domain", optional = true }
+
+[features]
+default = ["rego-app", "rego-infra", "rego-domain"]

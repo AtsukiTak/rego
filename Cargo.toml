@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "rego",
   "rego-app",
   "rego-infra",
   "rego-domain"
