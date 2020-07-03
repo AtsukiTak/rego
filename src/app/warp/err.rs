@@ -1,4 +1,4 @@
-use crate::res::{response, Response};
+use super::res::{response, Response};
 use futures::future;
 use http::StatusCode;
 use std::borrow::Cow;
@@ -72,7 +72,7 @@ impl Error {
     }
 }
 
-use rego_err::Error as RegoError;
+use crate::Error as RegoError;
 
 impl From<RegoError> for Error {
     fn from(e: RegoError) -> Self {

@@ -1,4 +1,4 @@
-use rego_err::Error;
+use crate::Error;
 use std::fmt;
 
 const N_ITER: u32 = 1_000;

@@ -1,9 +1,9 @@
+use crate::Error;
 use diesel::{
     connection::Connection as _,
     pg::PgConnection,
     r2d2::{Builder, ConnectionManager, Pool, PooledConnection},
 };
-use rego_err::Error;
 
 #[derive(Clone)]
 pub struct Postgres {

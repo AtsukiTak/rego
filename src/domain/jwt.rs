@@ -1,6 +1,6 @@
+use crate::Error;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
-use rego_err::Error;
 use serde::{de::DeserializeOwned, ser::Serialize};
 use serde_json::value::RawValue;
 use std::sync::Arc;
