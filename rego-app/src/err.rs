@@ -72,23 +72,23 @@ impl Error {
     }
 }
 
-use rego_domain::Error as DomainError;
+use rego_err::Error as RegoError;
 
-impl From<DomainError> for Error {
-    fn from(e: DomainError) -> Self {
+impl From<RegoError> for Error {
+    fn from(e: RegoError) -> Self {
         match e {
-            DomainError::BadInput { msg } => Error::new(StatusCode::BAD_REQUEST, msg),
-            DomainError::AuthFailed => Error::new(
+            RegoError::BadInput { msg } => Error::new(StatusCode::BAD_REQUEST, msg),
+            RegoError::AuthFailed => Error::new(
                 StatusCode::UNAUTHORIZED,
                 "authentication or authorization is failed",
             ),
-            DomainError::NotFound { resource } => {
+            RegoError::NotFound { resource } => {
                 Error::new(StatusCode::NOT_FOUND, format!("{} is not found", resource))
             }
-            DomainError::Conflict { resource } => {
+            RegoError::Conflict { resource } => {
                 Error::new(StatusCode::CONFLICT, format!("{} is conflict", resource))
             }
-            DomainError::Internal(_) => {
+            RegoError::Internal(_) => {
                 Error::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
             }
         }

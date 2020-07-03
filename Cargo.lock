@@ -1112,6 +1112,7 @@ dependencies = [
  "futures",
  "http",
  "rego-domain",
+ "rego-err",
  "serde",
  "warp",
 ]
@@ -1120,13 +1121,12 @@ dependencies = [
 name = "rego-domain"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "chrono",
  "jsonwebtoken",
  "pbkdf2",
+ "rego-err",
  "serde",
  "serde_json",
- "thiserror",
 ]
 
 [[package]]
@@ -1143,7 +1143,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "diesel",
- "rego-domain",
+ "rego-err",
  "tokio",
 ]
 

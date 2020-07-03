@@ -7,10 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0"
+rego-err = { path = "../rego-err" }
+
 chrono = "0.4"
 jsonwebtoken = "7.1"
 pbkdf2 = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["raw_value"] }
-thiserror = "1.0"
