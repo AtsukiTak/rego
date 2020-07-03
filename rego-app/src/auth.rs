@@ -1,12 +1,12 @@
 use crate::err::Error;
 use futures::future;
-use rego_domain::access_token::{AccessToken, JwtEncoder};
+use rego_domain::jwt::{JwtEncoder, WebToken};
 use std::str::FromStr;
 use warp::{filters::header::header, Filter, Rejection};
 
 pub fn auth(
     jwt_encoder: JwtEncoder,
-) -> impl Filter<Extract = (AccessToken,), Error = Rejection> + Clone {
+) -> impl Filter<Extract = (WebToken,), Error = Rejection> + Clone {
     (header::<BearerToken>("Authorization")
         .or(header::<BearerToken>("authorization"))
         .unify())

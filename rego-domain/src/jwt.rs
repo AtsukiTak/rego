@@ -6,7 +6,7 @@ use serde_json::value::RawValue;
 use std::sync::Arc;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct AccessToken {
+pub struct WebToken {
     pub body: Box<RawValue>,
     pub body_type: String,
     pub exp: usize,
@@ -18,7 +18,7 @@ pub trait AccessTokenBody: Serialize + DeserializeOwned {
     }
 }
 
-impl AccessToken {
+impl WebToken {
     pub fn new<B>(body: &B, valid_dur: Duration) -> Result<Self, Error>
     where
         B: AccessTokenBody,
@@ -28,7 +28,7 @@ impl AccessToken {
         let serialized_body = serde_json::to_string(body).map_err(Error::internal)?;
         let raw_val = RawValue::from_string(serialized_body).map_err(Error::internal)?;
 
-        Ok(AccessToken {
+        Ok(WebToken {
             body: raw_val,
             body_type: std::any::type_name::<B>().to_string(),
             exp,
@@ -62,11 +62,11 @@ impl JwtEncoder {
         }
     }
 
-    pub fn encode(&self, token: &AccessToken) -> Result<String, Error> {
+    pub fn encode(&self, token: &WebToken) -> Result<String, Error> {
         self.inner.encode(token)
     }
 
-    pub fn decode(&self, token: &str) -> Result<AccessToken, Error> {
+    pub fn decode(&self, token: &str) -> Result<WebToken, Error> {
         self.inner.decode(token)
     }
 }
@@ -85,13 +85,13 @@ impl Inner {
         }
     }
 
-    fn encode(&self, token: &AccessToken) -> Result<String, Error> {
+    fn encode(&self, token: &WebToken) -> Result<String, Error> {
         jsonwebtoken::encode(&Header::default(), token, &self.encoding_key).map_err(Error::internal)
     }
 
-    fn decode(&self, token: &str) -> Result<AccessToken, Error> {
+    fn decode(&self, token: &str) -> Result<WebToken, Error> {
         let res =
-            jsonwebtoken::decode::<AccessToken>(token, &self.decoding_key, &Validation::default())
+            jsonwebtoken::decode::<WebToken>(token, &self.decoding_key, &Validation::default())
                 .map_err(Error::internal)?;
         Ok(res.claims)
     }
