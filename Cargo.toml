@@ -1,7 +1,7 @@
 [workspace]
 members = [
   "rego",
-  "rego-app",
+  "rego-warp",
   "rego-infra",
   "rego-domain",
   "rego-err"
