@@ -3,5 +3,6 @@ members = [
   "rego",
   "rego-app",
   "rego-infra",
-  "rego-domain"
+  "rego-domain",
+  "rego-err"
 ]

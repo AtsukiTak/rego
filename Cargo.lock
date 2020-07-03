@@ -1100,6 +1100,7 @@ version = "0.1.0"
 dependencies = [
  "rego-app",
  "rego-domain",
+ "rego-err",
  "rego-infra",
 ]
 
@@ -1125,6 +1126,14 @@ dependencies = [
  "pbkdf2",
  "serde",
  "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "rego-err"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
  "thiserror",
 ]
 
