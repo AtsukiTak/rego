@@ -1,7 +1,7 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, sync::Arc};
 use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Clone)]
 pub enum Error {
     /// Error representing an **input** is at fault.
     #[error("violate domain invariance rule - {msg}")]
@@ -21,7 +21,7 @@ pub enum Error {
 
     /// Error representing an **internal** is at fault.
     #[error(transparent)]
-    Internal(#[from] anyhow::Error),
+    Internal(#[from] Arc<anyhow::Error>),
 }
 
 impl Error {
@@ -48,6 +48,6 @@ impl Error {
     where
         E: std::error::Error + Send + Sync + 'static,
     {
-        Error::Internal(anyhow::Error::from(e))
+        Error::Internal(Arc::new(anyhow::Error::from(e)))
     }
 }
